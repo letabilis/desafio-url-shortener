@@ -1,17 +1,20 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/letabilis/desafio-url-shortener/internal/shorten"
+	"github.com/letabilis/desafio-url-shortener/internal/types"
+	"github.com/letabilis/desafio-url-shortener/internal/utils"
 )
 
 type API struct {
-	svc *Service
+	svc *shorten.Service
 }
 
-func NewAPI(svc *Service) *API {
+func NewAPI(svc *shorten.Service) *API {
 	return &API{
 		svc: svc,
 	}
@@ -21,16 +24,16 @@ func NewAPI(svc *Service) *API {
 // @Summary      Shorten a Long URL
 // @Description  Responds with a Slug (shortCode) and an Expiry Date (1 day by default)
 // @Tags         url
-// @Param request body AnyRequest true "The URL to shorten"
+// @Param request body types.AnyRequest true "The URL to shorten"
 // @Accept       json
 // @Produce      json
-// @Success      200 {object} ShortenResponse
+// @Success      200 {object} types.ShortenResponse
 // @Failure      400 {string} string "Bad Request"
 // @Failure      500 {string} string "Internal Server Error"
 // @Router       /shorten [post]
 func (api *API) ShortenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var long AnyRequest
+		var long types.AnyRequest
 		err := json.NewDecoder(r.Body).Decode(&long)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -43,7 +46,7 @@ func (api *API) ShortenURL() http.HandlerFunc {
 			return
 		}
 
-		WriteJSON(w, http.StatusOK, shortenResponse)
+		utils.WriteJSON(w, http.StatusOK, shortenResponse)
 	}
 }
 

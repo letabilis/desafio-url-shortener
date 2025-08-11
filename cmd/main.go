@@ -6,7 +6,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/letabilis/desafio-url-shortener/cmd/api"
 	_ "github.com/letabilis/desafio-url-shortener/docs"
+	"github.com/letabilis/desafio-url-shortener/internal/shorten"
 	"github.com/redis/go-redis/v9"
 	"github.com/swaggo/http-swagger"
 )
@@ -31,9 +33,9 @@ func main() {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
-	svc := NewService(rdb)
+	svc := shorten.NewService(rdb)
 
-	api := NewAPI(svc)
+	api := api.NewAPI(svc)
 
 	r := chi.NewRouter()
 

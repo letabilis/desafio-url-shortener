@@ -38,7 +38,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.AnyRequest"
+                            "$ref": "#/definitions/types.AnyRequest"
                         }
                     }
                 ],
@@ -46,7 +46,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.ShortenResponse"
+                            "$ref": "#/definitions/types.ShortenResponse"
                         }
                     },
                     "400": {
@@ -92,7 +92,7 @@
         }
     },
     "definitions": {
-        "main.AnyRequest": {
+        "types.AnyRequest": {
             "type": "object",
             "properties": {
                 "url": {
@@ -101,7 +101,7 @@
                 }
             }
         },
-        "main.ShortenResponse": {
+        "types.ShortenResponse": {
             "type": "object",
             "properties": {
                 "expiry": {

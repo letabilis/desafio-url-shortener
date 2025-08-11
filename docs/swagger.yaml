@@ -1,12 +1,12 @@
 basePath: /url-shortener
 definitions:
-  main.AnyRequest:
+  types.AnyRequest:
     properties:
       url:
         example: https://example.com
         type: string
     type: object
-  main.ShortenResponse:
+  types.ShortenResponse:
     properties:
       expiry:
         example: "2025-08-12T12:19:22.040906963-04:00"
@@ -57,14 +57,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/main.AnyRequest'
+          $ref: '#/definitions/types.AnyRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.ShortenResponse'
+            $ref: '#/definitions/types.ShortenResponse'
         "400":
           description: Bad Request
           schema:

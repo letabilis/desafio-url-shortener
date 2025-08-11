@@ -1,9 +1,7 @@
-package main
+package shorten
 
 import (
 	"crypto/sha256"
-	"encoding/json"
-	"net/http"
 
 	"github.com/ivanrad/base62"
 )
@@ -16,10 +14,4 @@ func GetShortCode(longURL string) string {
 
 	return code
 
-}
-
-func WriteJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }

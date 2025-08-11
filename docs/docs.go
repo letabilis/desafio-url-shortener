@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/main.AnyRequest"
+                            "$ref": "#/definitions/types.AnyRequest"
                         }
                     }
                 ],
@@ -52,7 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.ShortenResponse"
+                            "$ref": "#/definitions/types.ShortenResponse"
                         }
                     },
                     "400": {
@@ -98,7 +98,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "main.AnyRequest": {
+        "types.AnyRequest": {
             "type": "object",
             "properties": {
                 "url": {
@@ -107,7 +107,7 @@ const docTemplate = `{
                 }
             }
         },
-        "main.ShortenResponse": {
+        "types.ShortenResponse": {
             "type": "object",
             "properties": {
                 "expiry": {
@@ -133,6 +133,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "This is my solution to the backend-br url-shortener challenge.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
