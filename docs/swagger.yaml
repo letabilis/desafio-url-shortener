@@ -1,0 +1,79 @@
+basePath: /url-shortener
+definitions:
+  main.AnyRequest:
+    properties:
+      url:
+        example: https://example.com
+        type: string
+    type: object
+  main.ShortenResponse:
+    properties:
+      expiry:
+        example: "2025-08-12T12:19:22.040906963-04:00"
+        type: string
+      slug:
+        example: P3Iww4CcYhA
+        type: string
+    type: object
+host: letabilis.github.io
+info:
+  contact:
+    email: sahilvdowlani@outlook.com
+    name: Sahil V. Dowlani
+    url: http://github.com/letabilis/desafio-url-shortener
+  description: This is my solution to the backend-br url-shortener challenge.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://github.com/backend-br/desafios/blob/master/url-shortener/PROBLEM.md
+  title: URL Shortener API
+  version: "1.0"
+paths:
+  /{slug}:
+    get:
+      description: Fetches the RedisDB and redirects client to original URL
+      parameters:
+      - description: Short URL Slug
+        in: path
+        name: slug
+        required: true
+        type: string
+      responses:
+        "302":
+          description: Redirect to the long URL
+        "404":
+          description: Short URL not found.
+      summary: Resolves a short URL to its corresponding long URL
+      tags:
+      - url
+  /shorten:
+    post:
+      consumes:
+      - application/json
+      description: Responds with a Slug (shortCode) and an Expiry Date (1 day by default)
+      parameters:
+      - description: The URL to shorten
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.AnyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ShortenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Shorten a Long URL
+      tags:
+      - url
+swagger: "2.0"

@@ -17,6 +17,17 @@ func NewAPI(svc *Service) *API {
 	}
 }
 
+// ShortenURL godoc
+// @Summary      Shorten a Long URL
+// @Description  Responds with a Slug (shortCode) and an Expiry Date (1 day by default)
+// @Tags         url
+// @Param request body AnyRequest true "The URL to shorten"
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} ShortenResponse
+// @Failure      400 {string} string "Bad Request"
+// @Failure      500 {string} string "Internal Server Error"
+// @Router       /shorten [post]
 func (api *API) ShortenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var long AnyRequest
@@ -36,6 +47,14 @@ func (api *API) ShortenURL() http.HandlerFunc {
 	}
 }
 
+// ResolveURL godoc
+// @Summary      Resolves a short URL to its corresponding long URL
+// @Description  Fetches the RedisDB and redirects client to original URL
+// @Tags         url
+// @Param 	 slug path string true "Short URL Slug"
+// @Success      302 "Redirect to the long URL"
+// @Failure      404 "Short URL not found."
+// @Router       /{slug} [get]
 func (api *API) ResolveURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := chi.URLParam(r, "slug")
