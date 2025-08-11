@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -28,6 +30,13 @@ import (
 // @host letabilis.github.io
 // @BasePath /url-shortener
 func main() {
+
+	ADDR, ok := os.LookupEnv("ADDR")
+	if !ok {
+		slog.Error("missing environment variables", "ADDR", ADDR)
+		return
+	}
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
@@ -43,13 +52,14 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:7777/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL(fmt.Sprintf("http://%s/swagger/doc.json", ADDR)),
 	))
+
 	r.Post("/shorten-url", api.ShortenURL())
 	r.Get("/{slug}", api.ResolveURL())
 
 	slog.Info("server listening on :7777")
-	err := http.ListenAndServe(":7777", r)
+	err := http.ListenAndServe(ADDR, r)
 
 	if err != nil {
 		slog.Error("failed to serve", "error", err)
