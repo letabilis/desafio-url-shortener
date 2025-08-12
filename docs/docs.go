@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/shorten": {
+        "/shorten-url": {
             "post": {
                 "description": "Responds with a Slug (shortCode) and an Expiry Date (1 day by default)",
                 "consumes": [

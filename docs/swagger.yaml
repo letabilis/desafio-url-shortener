@@ -46,7 +46,7 @@ paths:
       summary: Resolves a short URL to its corresponding long URL
       tags:
       - url
-  /shorten:
+  /shorten-url:
     post:
       consumes:
       - application/json
