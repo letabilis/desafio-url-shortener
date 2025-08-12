@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -30,18 +29,20 @@ import (
 // @host letabilis.github.io
 // @BasePath /url-shortener
 func main() {
+	SERVER_ADDR, ok1 := os.LookupEnv("SERVER_ADDR")
+	REDIS_ADDR, ok2 := os.LookupEnv("REDIS_ADDR")
 
-	ADDR, ok := os.LookupEnv("ADDR")
-	if !ok {
-		slog.Error("missing environment variables", "ADDR", ADDR)
+	if !ok1 || !ok2 {
+		slog.Error("missing environment variables", "SERVER_ADDR", SERVER_ADDR, "REDIS_ADDR", REDIS_ADDR)
 		return
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     REDIS_ADDR,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+
 	svc := shorten.NewService(rdb)
 
 	api := api.NewAPI(svc)
@@ -52,14 +53,14 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL(fmt.Sprintf("http://%s/swagger/doc.json", ADDR)),
+		httpSwagger.URL("http://localhost:7777/swagger/doc.json"),
 	))
 
 	r.Post("/shorten-url", api.ShortenURL())
 	r.Get("/{slug}", api.ResolveURL())
 
 	slog.Info("server listening on :7777")
-	err := http.ListenAndServe(ADDR, r)
+	err := http.ListenAndServe(SERVER_ADDR, r)
 
 	if err != nil {
 		slog.Error("failed to serve", "error", err)

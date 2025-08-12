@@ -1,0 +1,16 @@
+services:
+  url-shortener:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SERVER_ADDR: $SERVER_ADDR
+      REDIS_ADDR: $REDIS_ADDR
+    depends_on:
+      - redis
+    ports:
+      - 7777:7777
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
