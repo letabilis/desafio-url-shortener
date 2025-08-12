@@ -39,9 +39,9 @@ func main() {
 		DB:       0,  // use default DB
 	})
 
-	svc := shorten.NewService(rdb)
+	shortener := shorten.NewHandler(shorten.NewService(rdb))
 
-	api := api.NewAPI(SERVER_ADDR, svc)
+	api := api.NewAPI(SERVER_ADDR, shortener)
 
 	slog.Info("server listening on", "addr", SERVER_ADDR)
 	err := api.Run()

@@ -24,6 +24,6 @@ type Handler interface {
 }
 
 type ShortenService interface {
-	GetSlug(ctx context.Context, longURL string) (ShortenResponse, error)
+	GetSlug(ctx context.Context, longURL string) (*ShortenResponse, error)
 	GetLongURL(ctx context.Context, slug string) (string, error)
 }
