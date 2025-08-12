@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/letabilis/desafio-url-shortener/internal/shorten"
 	"github.com/letabilis/desafio-url-shortener/internal/types"
 	"github.com/letabilis/desafio-url-shortener/internal/utils"
 
@@ -14,14 +13,14 @@ import (
 )
 
 type API struct {
-	addr string
-	svc  *shorten.Service
+	addr      string
+	shortener types.ShortenService
 }
 
-func NewAPI(addr string, svc *shorten.Service) *API {
+func NewAPI(addr string, shortener types.ShortenService) *API {
 	return &API{
-		addr: addr,
-		svc:  svc,
+		addr:      addr,
+		shortener: shortener,
 	}
 }
 
@@ -64,7 +63,7 @@ func (api *API) ShortenURL() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		shortenResponse, err := api.svc.GetSlug(r.Context(), long.URL)
+		shortenResponse, err := api.shortener.GetSlug(r.Context(), long.URL.String())
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -86,7 +85,7 @@ func (api *API) ShortenURL() http.HandlerFunc {
 func (api *API) ResolveURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := chi.URLParam(r, "slug")
-		longURL, err := api.svc.GetLongURL(r.Context(), slug)
+		longURL, err := api.shortener.GetLongURL(r.Context(), slug)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
