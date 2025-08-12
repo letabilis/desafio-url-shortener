@@ -5,19 +5,44 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/letabilis/desafio-url-shortener/internal/shorten"
 	"github.com/letabilis/desafio-url-shortener/internal/types"
 	"github.com/letabilis/desafio-url-shortener/internal/utils"
+
+	"github.com/swaggo/http-swagger"
 )
 
 type API struct {
-	svc *shorten.Service
+	addr string
+	svc  *shorten.Service
 }
 
-func NewAPI(svc *shorten.Service) *API {
+func NewAPI(addr string, svc *shorten.Service) *API {
 	return &API{
-		svc: svc,
+		addr: addr,
+		svc:  svc,
 	}
+}
+
+func (api *API) mount() http.Handler {
+	r := chi.NewRouter()
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:7777/swagger/doc.json"),
+	))
+
+	r.Post("/shorten-url", api.ShortenURL())
+	r.Get("/{slug}", api.ResolveURL())
+
+	return r
+}
+
+func (api *API) Run() error {
+	return http.ListenAndServe(api.addr, api.mount())
 }
 
 // ShortenURL godoc
@@ -30,7 +55,7 @@ func NewAPI(svc *shorten.Service) *API {
 // @Success      200 {object} types.ShortenResponse
 // @Failure      400 {string} string "Bad Request"
 // @Failure      500 {string} string "Internal Server Error"
-// @Router       /shorten [post]
+// @Router       /shorten-url [post]
 func (api *API) ShortenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var long types.AnyRequest

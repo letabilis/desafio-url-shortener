@@ -2,16 +2,12 @@ package main
 
 import (
 	"log/slog"
-	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/letabilis/desafio-url-shortener/cmd/api"
 	_ "github.com/letabilis/desafio-url-shortener/docs"
 	"github.com/letabilis/desafio-url-shortener/internal/shorten"
 	"github.com/redis/go-redis/v9"
-	"github.com/swaggo/http-swagger"
 )
 
 // @title URL Shortener API
@@ -45,22 +41,10 @@ func main() {
 
 	svc := shorten.NewService(rdb)
 
-	api := api.NewAPI(svc)
+	api := api.NewAPI(SERVER_ADDR, svc)
 
-	r := chi.NewRouter()
-
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:7777/swagger/doc.json"),
-	))
-
-	r.Post("/shorten-url", api.ShortenURL())
-	r.Get("/{slug}", api.ResolveURL())
-
-	slog.Info("server listening on :7777")
-	err := http.ListenAndServe(SERVER_ADDR, r)
+	slog.Info("server listening on", "addr", SERVER_ADDR)
+	err := api.Run()
 
 	if err != nil {
 		slog.Error("failed to serve", "error", err)
