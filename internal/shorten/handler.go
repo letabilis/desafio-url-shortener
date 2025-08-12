@@ -3,6 +3,7 @@ package shorten
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/letabilis/desafio-url-shortener/internal/types"
@@ -37,13 +38,20 @@ func (h *handler) RegisterRoutes(r chi.Router) {
 // @Router       /shorten-url [post]
 func (h *handler) ShortenURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var long types.AnyRequest
-		err := json.NewDecoder(r.Body).Decode(&long)
+		var payload types.AnyRequest
+		err := json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		shortenResponse, err := h.svc.GetSlug(r.Context(), long.URL.String())
+
+		url, err := url.ParseRequestURI(payload.URL)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		shortenResponse, err := h.svc.GetSlug(r.Context(), url.String())
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

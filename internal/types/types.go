@@ -2,7 +2,6 @@ package types
 
 import (
 	"context"
-	"net/url"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -10,7 +9,7 @@ import (
 
 // The AnyRequest struct maps incoming Shortening or Redirection JSON requests.
 type AnyRequest struct {
-	URL url.URL `json:"url" example:"https://example.com"`
+	URL string `json:"url" example:"https://example.com"`
 }
 
 // The ShortenResponse struct consists of the resulting output of a ShortenRequest.
