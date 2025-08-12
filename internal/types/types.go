@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/url"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // The AnyRequest struct maps incoming Shortening or Redirection JSON requests.
@@ -15,6 +17,10 @@ type AnyRequest struct {
 type ShortenResponse struct {
 	Slug   string    `json:"slug" example:"P3Iww4CcYhA"`
 	Expiry time.Time `json:"expiry" example:"2025-08-12T12:19:22.040906963-04:00"`
+}
+
+type Handler interface {
+	RegisterRoutes(r chi.Router)
 }
 
 type ShortenService interface {
