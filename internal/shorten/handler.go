@@ -41,7 +41,7 @@ func (h *handler) ShortenURL() http.HandlerFunc {
 		var payload types.AnyRequest
 		err := json.NewDecoder(r.Body).Decode(&payload)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
