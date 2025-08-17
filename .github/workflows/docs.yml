@@ -24,7 +24,7 @@ jobs:
       - name: Install Swag CLI and generate swagger docs
         run: |
           go install github.com/swaggo/swag/cmd/swag@latest
-          swag init -d ./cmd --parseInternal
+          swag init -g cmd/main.go --parseInternal
 
       - name: Commit && Push
         run: |
