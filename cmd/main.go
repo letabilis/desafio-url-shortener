@@ -6,6 +6,7 @@ import (
 
 	"github.com/letabilis/desafio-url-shortener/cmd/api"
 	_ "github.com/letabilis/desafio-url-shortener/docs"
+	"github.com/letabilis/desafio-url-shortener/internal/redirect"
 	"github.com/letabilis/desafio-url-shortener/internal/shorten"
 	"github.com/redis/go-redis/v9"
 )
@@ -40,8 +41,13 @@ func main() {
 	})
 
 	shortener := shorten.NewHandler(shorten.NewService(rdb))
+	redirecter := redirect.NewHandler(redirect.NewService(rdb))
 
-	api := api.NewAPI(SERVER_ADDR, shortener)
+	api := api.NewAPI(
+		SERVER_ADDR,
+		shortener,
+		redirecter,
+	)
 
 	slog.Info("server listening on", "addr", SERVER_ADDR)
 	err := api.Run()
