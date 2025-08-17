@@ -1,15 +1,13 @@
 services:
-  url-shortener:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  solucao-url-shortener:
+    image: ghcr.io/letabilis/desafio-url-shortener:latest
     environment:
-      SERVER_ADDR: $SERVER_ADDR
       REDIS_ADDR: $REDIS_ADDR
+      REDIS_PASSWORD: $REDIS_PASSWORD
     depends_on:
       - redis
     ports:
-      - 7777:7777
+      - 8080:8080
   redis:
     image: redis:latest
     ports:

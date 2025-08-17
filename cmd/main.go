@@ -2,12 +2,12 @@ package main
 
 import (
 	"log/slog"
-	"os"
 
 	"github.com/letabilis/desafio-url-shortener/cmd/api"
 	_ "github.com/letabilis/desafio-url-shortener/docs"
 	"github.com/letabilis/desafio-url-shortener/internal/redirect"
 	"github.com/letabilis/desafio-url-shortener/internal/shorten"
+	"github.com/letabilis/desafio-url-shortener/internal/utils"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -26,31 +26,29 @@ import (
 // @host letabilis.github.io
 // @BasePath /url-shortener
 func main() {
-	SERVER_ADDR, ok1 := os.LookupEnv("SERVER_ADDR")
-	REDIS_ADDR, ok2 := os.LookupEnv("REDIS_ADDR")
-
-	if !ok1 || !ok2 {
-		slog.Error("missing environment variables", "SERVER_ADDR", SERVER_ADDR, "REDIS_ADDR", REDIS_ADDR)
+	env, err := utils.LoadEnv("REDIS_ADDR", "REDIS_PASSWORD")
+	if err != nil {
+		slog.Error(err.Error())
 		return
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     REDIS_ADDR,
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     env["REDIS_ADDR"],
+		Password: env["REDIS_PASSWORD"],
+		DB:       0, // use default db
 	})
 
 	shortener := shorten.NewHandler(shorten.NewService(rdb))
 	redirecter := redirect.NewHandler(redirect.NewService(rdb))
 
 	api := api.NewAPI(
-		SERVER_ADDR,
+		":8080",
 		shortener,
 		redirecter,
 	)
 
-	slog.Info("server listening on", "addr", SERVER_ADDR)
-	err := api.Run()
+	slog.Info("server is now listening")
+	err = api.Run()
 
 	if err != nil {
 		slog.Error("failed to serve", "error", err)

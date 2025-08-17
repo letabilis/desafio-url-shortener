@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/letabilis/desafio-url-shortener/internal/types"
 
-	"github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type API struct {
@@ -29,7 +29,7 @@ func (api *API) mount() http.Handler {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:7777/swagger/doc.json"),
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
 	))
 
 	for _, handler := range api.handlers {
